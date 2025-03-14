@@ -11,7 +11,7 @@ def calculate_hash(image_path):
         print(f"Error: Could not open or process image at {image_path}")
         return None
 
-def find_duplicate_images(directory):
+def find_duplicate_images(directory, threshold = 5):
     hashes = {}
     duplicates = {}
 
@@ -21,16 +21,23 @@ def find_duplicate_images(directory):
 
         image_path = os.path.join(directory, filename)
         hash_value = calculate_hash(image_path)
+        duplicate_found = False #a flag for not overwriting the existing file paths in hashes dictionary
 
         if hash_value is not None:
-            pass
-            if hash_value in hashes:
-                if hashes[hash_value] in duplicates:
-                    original_image = hashes[hash_value]
-                    duplicates[original_image].append(image_path)
-                else:
-                    duplicates[hashes[hash_value]] = list((hashes[hash_value],image_path))
-            else:
+            if not hashes:
+                hashes[hash_value] = image_path
+                continue
+            # print("\n\n\nCURRENT LIST STATE:\n\n")
+            for e_h, e_i_p in list(hashes.items()):
+                # print(f"Hamming = {e_h - hash_value} -> Path: {e_i_p}")
+                if (e_h - hash_value) < threshold:
+                    duplicate_found = True
+                    if hashes[hash_value] in duplicates:
+                        duplicates[e_i_p].append(image_path)
+                    else:
+                        duplicates[e_i_p] = list((e_i_p,image_path))
+
+            if not duplicate_found:
                 hashes[hash_value] = image_path
 
     return duplicates
