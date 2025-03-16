@@ -13,7 +13,7 @@ def calculate_hash(image_path):
 
 def find_duplicate_images(directory, threshold = 5):
     hashes = {}
-    duplicates = {}
+    duplicates = []
 
     for filename in os.listdir(directory):
         if not filename.lower().endswith(('.png', '.jpg', 'jpeg', 'gif', '.bmp')):
@@ -27,15 +27,11 @@ def find_duplicate_images(directory, threshold = 5):
             if not hashes:
                 hashes[hash_value] = image_path
                 continue
-            # print("\n\n\nCURRENT LIST STATE:\n\n")
-            for e_h, e_i_p in list(hashes.items()):
-                # print(f"Hamming = {e_h - hash_value} -> Path: {e_i_p}")
-                if (e_h - hash_value) < threshold:
+            for existing_hash, existing_image_path in list(hashes.items()):
+
+                if (existing_hash - hash_value) < threshold:
                     duplicate_found = True
-                    if hashes[hash_value] in duplicates:
-                        duplicates[e_i_p].append(image_path)
-                    else:
-                        duplicates[e_i_p] = list((e_i_p,image_path))
+                    duplicates.append({'Duplicate File': image_path, 'Original File': existing_image_path, 'Difference Score': (existing_hash - hash_value)})
 
             if not duplicate_found:
                 hashes[hash_value] = image_path
@@ -48,8 +44,10 @@ if __name__ == "__main__":
     duplicates = find_duplicate_images(directory_to_scan)
 
     if duplicates:
-        for value_list in duplicates.values():
-            print(value_list)
+        # for value_list in duplicates.values():
+        #     print(value_list)
+        for i in duplicates:
+            print(i)
 
     else:
         print("No duplicate images found.")
