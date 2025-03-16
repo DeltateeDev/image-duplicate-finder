@@ -29,7 +29,6 @@ def find_duplicate_images(directory, threshold = 5):
 
     for i, image_path in enumerate(image_paths):
         hash_value = hash_results[i]
-        print(i)
 
         if hash_value is None:
                 continue
